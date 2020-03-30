@@ -71,7 +71,7 @@ const Tweet = ({
           color="rgb(27, 149, 224)"
           size={40}
           onClick={() => {
-            setReply(true)
+            setReply(!reply)
           }}
         >
       {reply && <PoppingCircle size={40} color={"rgb(27, 149, 224)"} />}
@@ -99,7 +99,7 @@ const Tweet = ({
           color="rgb(27, 149, 224)"
           size={40}
           onClick={() => {
-            setShare(true)
+            setShare(!share)
           }}
         >
           {share && <PoppingCircle size={40} color={"rgb(27, 149, 224)"} />}
