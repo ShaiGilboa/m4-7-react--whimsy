@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import { format } from 'date-fns'
 
 import LikeButton from '../LikeButton';
 
@@ -12,6 +13,13 @@ const propTypes = {
   username: PropTypes.string.isRequired,
   avatarSrc: PropTypes.string.isRequired,
   tweetContents: PropTypes.string.isRequired,
+  numOfLikes: PropTypes.number.isRequired,
+  numOfRetweets: PropTypes.number.isRequired,
+  timestamp: PropTypes.instanceOf(Date).isRequired,
+  isLikedByCurrentUser: PropTypes.bool.isRequired,
+  isRetweetedByCurrentUser: PropTypes.bool.isRequired,
+  handleToggleLike: PropTypes.func.isRequired,
+  handleToggleRetweet: PropTypes.func.isRequired,
 };
 
 const Tweet = ({
@@ -27,6 +35,7 @@ const Tweet = ({
   handleToggleLike,
   handleToggleRetweet,
 }) => {
+  const timestampFormatted = format(timestamp, "h:mm' 'a' \u00B7 'MMM do, yyyy'")
   return (
     <Wrapper>
       <Header>
@@ -39,8 +48,16 @@ const Tweet = ({
 
       <TweetContents>{tweetContents}</TweetContents>
 
+      <Timestamp>{timestampFormatted}</Timestamp>
       <Divider />
-
+      <Stats>
+        <p>
+          <span>{numOfRetweets}</span> Retweets
+        </p>
+        <p>
+          <span>{numOfLikes}</span> Likes
+        </p>
+      </Stats>
       <Actions>
         <Action
           color="rgb(27, 149, 224)"
@@ -82,6 +99,8 @@ const Tweet = ({
     </Wrapper>
   );
 };
+
+
 
 const Wrapper = styled.div`
   background: white;
@@ -140,9 +159,16 @@ const Divider = styled.div`
 `;
 
 const Stats = styled.div`
+  color: rgb(101, 119, 134);
+  width: 40%;
   display: flex;
   align-items: center;
   height: 48px;
+  justify-content: space-between;
+  span {
+    color: black;
+    font-weight: bold;
+  }
 `;
 
 const Actions = styled.div`

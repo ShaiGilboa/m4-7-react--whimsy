@@ -5,8 +5,50 @@ import 'focus-visible';
 import avatar from '../../assets/carmen-sandiego.png';
 
 import Tweet from '../Tweet';
-
+const initialState = {
+  "numOfLikes": 100,
+  "numOfRetweets": 100,
+  "isLiked": false,
+  "isRetweeted": false,
+};
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'like':
+      return ({
+        ...state,
+        numOfLikes: state.numOfLikes+1,
+        isLiked: true,
+      });
+    case 'dislike':
+    return ({
+      ...state,
+      numOfLikes: state.numOfLikes-1,
+      isLiked: false,
+    });
+    case 'retweet':
+    return ({
+      ...state,
+      numOfRetweets: state.numOfRetweets+1,
+      isRetweeted: true,
+    });
+    case 'unretweet':
+    return ({
+      ...state,
+      numOfRetweets: state.numOfRetweets-1,
+      isRetweeted: false,
+    });
+    default:
+      break;
+  }
+}
 const App = () => {
+  const [state, dispatch] = React.useReducer(reducer, initialState);
+  const toggleLike = () => {
+    state.isLiked ? dispatch({type: 'dislike'}) : dispatch({type: 'like'});
+  };
+  const toggleRetweet =() => {
+    state.isRetweeted ? dispatch({type: 'unretweet'}) : dispatch({type: 'retweet'});
+  };
   return (
     <Wrapper>
       <Tweet
@@ -15,6 +57,12 @@ const App = () => {
         username="carmen-sandiego"
         avatarSrc={avatar}
         timestamp={new Date()}
+        numOfRetweets={state.numOfRetweets}
+        numOfLikes={state.numOfLikes}
+        isLikedByCurrentUser={state.isLiked}
+        isRetweetedByCurrentUser={state.isRetweeted}
+        handleToggleLike={toggleLike}
+        handleToggleRetweet={toggleRetweet}
       />
     </Wrapper>
   );
