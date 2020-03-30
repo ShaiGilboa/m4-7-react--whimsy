@@ -21,13 +21,20 @@ const ScaleIn = ({children}) => {
   //   friction: 12,
   // },
   })
+  const query = '(prefers-reduced-motion: reduce)';
+  const mediaQueryList = window.matchMedia(query);
+  const shouldReduceMotion = mediaQueryList.matches;
   return (
-    <animated.div style={{
-      position: 'absolute',
-      ...style,
-    }}>
-      {children}
-    </animated.div>
+    <>
+      {shouldReduceMotion? <div>{children}</div>:
+        <animated.div style={{
+          position: 'absolute',
+          ...style,
+        }}>
+          {children}
+        </animated.div>
+      }
+    </>
   )
 }
 

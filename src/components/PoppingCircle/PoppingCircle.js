@@ -2,8 +2,17 @@ import React from 'react';
 import styled, { keyframes } from 'styled-components';
 
 const PoppingCircle = ({ size, color }) => {
+  const query = '(prefers-reduced-motion: reduce)';
+  const mediaQueryList = window.matchMedia(query);
+  const shouldReduceMotion = mediaQueryList.matches;
+  
   return (
-    <StyledCircle style={{width:`${size}px`, height:`${size}px`}}/>
+    <>
+    {shouldReduceMotion ?
+      <StyledCircleReduced style={{width:`${size}px`, height:`${size}px`}}/> :
+      <StyledCircle style={{width:`${size}px`, height:`${size}px`}}/>
+    }
+    </>
   )
 }
 
@@ -26,9 +35,18 @@ const StyledCircle = styled.div`
   position: absolute;
   z-index:0;
   background-color: rgb(219, 29, 150);
+  border-radius: 20px;
+  border: solid .5px rgb(182, 26, 125);
+  animation: ${StyledPoppingCircle} 400ms forwards;
+`;
+
+const StyledCircleReduced = styled.div`
+  position: absolute;
+  z-index:0;
+  background-color: rgb(219, 29, 150);
   border-radius:20px;
   border: solid .5px rgb(182, 26, 125);
-  animation: ${StyledPoppingCircle} 400ms forwards cubic-bezier(.46,1.84,.93,.58);
-`
+  opacity: 0.4;
+`;
 
 export default PoppingCircle;
