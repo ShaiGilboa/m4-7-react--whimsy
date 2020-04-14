@@ -13,6 +13,7 @@ In general, do you prefer using web apps or mobile apps?
 ### Mobile apps tend to have better "UX".
 
 A big part of the discrepancy is around animation and interaction.
+ux - user experience
 
 ---
 
@@ -170,6 +171,63 @@ const Shadow = styled(ButtonLayer)`
 `;
 ```
 
+```jsx
+const App = ({ children = 'Hello' }) => {
+  return (
+    <Button>
+      <Surface>{children}</Surface>
+      <Shadow />
+    </Button>
+  );
+};
+
+// render(<Demos.AnimationEx2 />);
+render(<App />)
+
+const Button = styled.button`
+  cursor: pointer;            
+  position: relative;
+  width: 300px;
+  height: 80px;
+  background: transparent;
+  border: none;
+`;
+
+const ButtonLayer = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  border-radius: 4px;
+`;
+
+const Surface = styled(ButtonLayer)`
+  z-index: 2;
+  background: hotpink;
+  color: white;
+  text-shadow: 1px 1px 2px mediumvioletred;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 32px;
+  transition: all 1s cubic-bezier(0.33, 1.91, 1, 0.65); //transition: 'what is being transitioned' 'how long' 'in what way?'
+
+  &{
+    transform: translate(-10px,10px);
+  }
+`;
+
+const Shadow = styled(ButtonLayer)`
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  background: #ccc;
+`;
+```
+
 ---
 
 ```jsx live=true split=[80,20]
@@ -206,7 +264,7 @@ const Bulb = styled.div`
 `;
 
 const On = styled(Bulb)`
-  z-index: 1;
+  z-index: 2;
   background: linear-gradient(180deg, #ffea00, #ffb200);
   box-shadow: 0px 5px 25px hsla(42deg, 100%, 50%, 0.8);
   transition: opacity 450ms;
@@ -219,7 +277,7 @@ const Off = styled(Bulb)`
 
 const Gloss = styled.div`
   position: absolute;
-  z-index: 2;
+  z-index: 3;
   top: 10%;
   left: 0;
   right: 0;
@@ -284,7 +342,11 @@ const Demo = () => {
   return <animated.button style={style} onClick={() => setToggled(!toggled)} />;
 };
 ```
-
+styled button
+```jsx
+const StyledButton = styled(animated.button)`
+`;
+```
 ---
 
 ```js live=true
@@ -417,6 +479,71 @@ const Box = styled.div`
 
 render(<App />);
 ```
+```jsx
+import React from "react";
+import styled from "styled-components";
+import { useSpring, animated } from "react-spring";
+
+// Make the red square "inflate" more "naturally"
+const App = () => {
+  const [inflatedAmount, setInflatedAmount] = React.useState(1);
+
+  const SpringStyle = useSpring({
+    transform: `scale(${inflatedAmount})`,
+    config: {
+      tesnsion: 100,
+      friction: 15
+    }
+  });
+
+  const inflateMore = () => {
+    setInflatedAmount(inflatedAmount + 0.55);
+  };
+
+  const inflateLess = () => {
+    setInflatedAmount(inflatedAmount - 0.55);
+  };
+
+  return (
+    <Wrapper>
+      <Button onClick={inflateMore}>Inflate!</Button>
+      <Button2 onClick={inflateLess}>Deflate!</Button2>
+      <Box style={SpringStyle}>Inflated!</Box>
+    </Wrapper>
+  );
+};
+
+const Wrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+`;
+const Button = styled.button`
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1;
+`;
+const Button2 = styled.button`
+  position: absolute;
+  top: 10px;
+  left: 100px;
+  z-index: 1;
+`;
+const Box = styled(animated.div)`
+  width: 100px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: red;
+  font-size: 14px;
+`;
+
+export default App;
+
+```
 
 ---
 
@@ -466,4 +593,54 @@ const Button = styled.button`
 `;
 
 render(<App />);
+```
+```jsx
+import React from "react";
+import styled from "styled-components";
+import { useSpring, animated } from "react-spring";
+
+const Card = ({ isVisible, children }) => {
+  const cardStyle = useSpring({
+    opacity: isVisible ? 1 : 0,
+    transform: isVisible ? "translateY(0px)" : "translateY(10px)"
+    // config: {
+    //   mass: 10,
+    //   friction: 25,
+    //   tension: 200
+    // }
+  });
+  return <CardWrapper style={cardStyle}>{children}</CardWrapper>;
+};
+
+const CardWrapper = styled(animated.div)`
+  box-shadow: 3px 3px 6px black;
+  border-radius: 10px;
+  padding: 50px;
+`;
+
+const App = () => {
+  const [showCard, setShowCard] = React.useState(false);
+
+  return (
+    <Wrapper>
+      <Button onClick={() => setShowCard(!showCard)}>Show Card</Button>
+      <Card isVisible={showCard}>Hello World</Card>
+    </Wrapper>
+  );
+};
+
+const Wrapper = styled.div`
+  text-align: center;
+  margin-top: 60px;
+  width: 260px;
+`;
+
+const Button = styled.button`
+  position: absolute;
+  top: 10px;
+  left: 10px;
+`;
+
+export default App;
+
 ```

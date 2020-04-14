@@ -1,17 +1,30 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import { format } from 'date-fns'
 
 import LikeButton from '../LikeButton';
+import PoppingCircle from '../PoppingCircle';
 
 import Action from './Action';
 import TweetActionIcon from './TweetActionIcon';
+
+const initialState = {
+
+}
 
 const propTypes = {
   displayName: PropTypes.string.isRequired,
   username: PropTypes.string.isRequired,
   avatarSrc: PropTypes.string.isRequired,
   tweetContents: PropTypes.string.isRequired,
+  numOfLikes: PropTypes.number.isRequired,
+  numOfRetweets: PropTypes.number.isRequired,
+  timestamp: PropTypes.instanceOf(Date).isRequired,
+  isLikedByCurrentUser: PropTypes.bool.isRequired,
+  isRetweetedByCurrentUser: PropTypes.bool.isRequired,
+  handleToggleLike: PropTypes.func.isRequired,
+  handleToggleRetweet: PropTypes.func.isRequired,
 };
 
 const Tweet = ({
@@ -27,6 +40,10 @@ const Tweet = ({
   handleToggleLike,
   handleToggleRetweet,
 }) => {
+  const [reply, setReply] = React.useState(false);
+  const [share, setShare] = React.useState(false)
+
+  const timestampFormatted = format(timestamp, "h:mm' 'a' \u00B7 'MMM do, yyyy'")
   return (
     <Wrapper>
       <Header>
@@ -39,16 +56,25 @@ const Tweet = ({
 
       <TweetContents>{tweetContents}</TweetContents>
 
+      <Timestamp>{timestampFormatted}</Timestamp>
       <Divider />
-
+      <Stats>
+        <p>
+          <span>{numOfRetweets}</span> Retweets
+        </p>
+        <p>
+          <span>{numOfLikes}</span> Likes
+        </p>
+      </Stats>
       <Actions>
         <Action
           color="rgb(27, 149, 224)"
           size={40}
           onClick={() => {
-            /* noop */
+            setReply(!reply)
           }}
         >
+      {reply && <PoppingCircle size={40} color={"rgb(27, 149, 224)"} />}
           <TweetActionIcon kind="reply" />
         </Action>
 
@@ -57,10 +83,12 @@ const Tweet = ({
           size={40}
           onClick={handleToggleRetweet}
         >
-          <TweetActionIcon
-            kind="retweet"
-            color={isRetweetedByCurrentUser ? 'rgb(23, 191, 99)' : undefined}
-          />
+          {isRetweetedByCurrentUser && <PoppingCircle size={40} color={'rgb(23, 191, 99)'} />}
+            <TweetActionIcon
+              kind="retweet"
+              color={isRetweetedByCurrentUser ? 'rgb(23, 191, 99)' : undefined}
+            />
+
         </Action>
 
         <Action color="rgb(224, 36, 94)" size={40} onClick={handleToggleLike}>
@@ -71,9 +99,11 @@ const Tweet = ({
           color="rgb(27, 149, 224)"
           size={40}
           onClick={() => {
-            /* noop */
+            setShare(!share)
           }}
         >
+          {share && <PoppingCircle size={40} color={"rgb(27, 149, 224)"} />}
+
           <TweetActionIcon kind="share" />
         </Action>
       </Actions>
@@ -82,6 +112,8 @@ const Tweet = ({
     </Wrapper>
   );
 };
+
+
 
 const Wrapper = styled.div`
   background: white;
@@ -140,9 +172,16 @@ const Divider = styled.div`
 `;
 
 const Stats = styled.div`
+  color: rgb(101, 119, 134);
+  width: 40%;
   display: flex;
   align-items: center;
   height: 48px;
+  justify-content: space-between;
+  span {
+    color: black;
+    font-weight: bold;
+  }
 `;
 
 const Actions = styled.div`
